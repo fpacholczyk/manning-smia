@@ -1,0 +1,14 @@
+# Since Spring Boot 2.4, to use legacy bootstrap config, a property must be set:
+# spring.cloud.bootstrap.enabled=true
+# https://docs.spring.io/spring-cloud-config/docs/3.1.1/reference/html/#config-first-bootstrap
+#
+# (see ../docker/docker-compose.yml above)
+
+spring:
+  application:
+    name: licensing-service
+  profiles:
+    active: dev
+  cloud:
+    config:
+      uri: "http://configserver:8071"

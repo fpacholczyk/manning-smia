@@ -38,6 +38,7 @@ services:
       CONFIGSERVER_PORT:   "8071"
       DATABASESERVER_PORT: "5432"
       ENCRYPT_KEY:       "IMSYMMETRIC"
+      SPRING_CLOUD_BOOTSTRAP_ENABLED: "true"
     depends_on:
       database:
         condition: service_healthy
