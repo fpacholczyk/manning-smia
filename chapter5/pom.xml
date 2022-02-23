@@ -7,14 +7,13 @@
   <artifactId>ostock-parent-pom</artifactId>
   <packaging>pom</packaging>
 
-
   <name>optimagrowth-parent-pom</name>
   <description>Parent Pom for the optimagrowth project</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.3.RELEASE</version>
+        <version>2.6.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
