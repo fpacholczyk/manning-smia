@@ -1,14 +1,14 @@
 package com.optimagrowth.license.service;
 
-import java.util.UUID;
-
+import com.optimagrowth.license.config.ServiceConfig;
+import com.optimagrowth.license.model.License;
+import com.optimagrowth.license.repository.LicenseRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import com.optimagrowth.license.config.ServiceConfig;
-import com.optimagrowth.license.model.License;
-import com.optimagrowth.license.repository.LicenseRepository;
+import java.util.Locale;
+import java.util.UUID;
 
 @Service
 public class LicenseService {
@@ -23,10 +23,13 @@ public class LicenseService {
 	ServiceConfig config;
 
 
-	public License getLicense(String licenseId, String organizationId){
+	public License getLicense(String licenseId, String organizationId, Locale locale){
 		License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
 		if (null == license) {
-			throw new IllegalArgumentException(String.format(messages.getMessage("license.search.error.message", null, null),licenseId, organizationId));	
+			throw new IllegalArgumentException(
+					String.format(
+							messages.getMessage("license.search.error.message", null, locale),
+							licenseId, organizationId));
 		}
 		return license.withComment(config.getProperty());
 	}
@@ -44,12 +47,12 @@ public class LicenseService {
 		return license.withComment(config.getProperty());
 	}
 
-	public String deleteLicense(String licenseId){
-		String responseMessage = null;
+	public String deleteLicense(String licenseId, Locale locale){
+		String responseMessage;
 		License license = new License();
 		license.setLicenseId(licenseId);
 		licenseRepository.delete(license);
-		responseMessage = String.format(messages.getMessage("license.delete.message", null, null),licenseId);
+		responseMessage = String.format(messages.getMessage("license.delete.message", null, locale),licenseId);
 		return responseMessage;
 
 	}
