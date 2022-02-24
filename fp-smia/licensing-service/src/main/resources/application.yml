@@ -1,0 +1,19 @@
+spring:
+
+  application:
+    name: licensing-service
+
+  cloud:
+    config:
+      uri: "http://configserver:8071"
+
+  profiles:
+    active: dev
+
+  # spring.config.import is the default way to bind to Config Server since Spring Boot 2.4
+  # https://docs.spring.io/spring-cloud-config/docs/3.1.1/reference/html/#_spring_cloud_config_client
+  config:
+    # Either include URI in config.import property, or specify as cloud.config.uri
+    # The location in the 'import' property has precedence over the 'uri' property. ORDER MATTERS!
+    # Without 'optional:' the config client will fail if unable to connect to the config server.
+    import: "configserver:"
