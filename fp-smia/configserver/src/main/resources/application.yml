@@ -15,6 +15,10 @@ spring:
           # uri: https://github.com/ihuaylupo/config.git
           #searchPaths: licensingservice
 
+  output:
+    ansi:
+      enabled: always
+
 server:
   port: 8071
 
