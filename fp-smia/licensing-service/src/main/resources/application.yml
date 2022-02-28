@@ -1,5 +1,4 @@
 spring:
-
   application:
     name: licensing-service
 
@@ -17,3 +16,7 @@ spring:
     # The location in the 'import' property has precedence over the 'uri' property. ORDER MATTERS!
     # Without 'optional:' the config client will fail if unable to connect to the config server.
     import: "configserver:"
+
+  output:
+    ansi:
+      enabled: always

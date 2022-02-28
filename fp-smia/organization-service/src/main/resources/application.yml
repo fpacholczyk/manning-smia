@@ -1,6 +1,9 @@
 spring:
   application:
-    name: eureka-server
+    name: organization-service
+
+  profiles:
+    active: dev
 
   cloud:
     config:
