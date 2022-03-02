@@ -7,8 +7,10 @@ import com.optimagrowth.license.repository.LicenseRepository;
 import com.optimagrowth.license.service.client.OrganizationDiscoveryClient;
 import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
+import com.optimagrowth.license.utils.UserContextHolder;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,16 +25,22 @@ import java.util.concurrent.TimeoutException;
 public class LicenseService {
 
     private static final Logger logger = LoggerFactory.getLogger(LicenseService.class);
+
     @Autowired
     MessageSource messages;
+
     @Autowired
     ServiceConfig config;
+
     @Autowired
     OrganizationFeignClient organizationFeignClient;
+
     @Autowired
     OrganizationRestTemplateClient organizationRestClient;
+
     @Autowired
     OrganizationDiscoveryClient organizationDiscoveryClient;
+
     @Autowired
     private LicenseRepository licenseRepository;
 
@@ -92,9 +100,11 @@ public class LicenseService {
     }
 
     @CircuitBreaker(name = "licenseService", fallbackMethod = "circuitBreakerFallback")
+    @RateLimiter(name = "licenseService", fallbackMethod = "rateLimiterFallback")
     @Retry(name = "retryLicenseService", fallbackMethod = "retryFallback")
     @Bulkhead(name = "bulkheadLicenseService", fallbackMethod = "bulkheadFallback")
     public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
+        logger.debug("LicenseService#getLicensesByOrganization Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
         randomlyRunLong();
         return licenseRepository.findByOrganizationId(organizationId);
     }
@@ -143,6 +153,11 @@ public class LicenseService {
 
     private List<License> circuitBreakerFallback(String organizationId, Throwable t) {
         logger.info("circuitBreakerFallback");
+        return buildFallbackLicenseList(organizationId, t);
+    }
+
+    private List<License> rateLimiterFallback(String organizationId, Throwable t) {
+        logger.info("rateLimiterFallback");
         return buildFallbackLicenseList(organizationId, t);
     }
 

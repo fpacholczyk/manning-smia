@@ -52,6 +52,21 @@ resilience4j.circuitbreaker:
       waitDurationInOpenState: 20000
       failureRateThreshold: 60
 
+resilience4j.ratelimiter:
+  instances:
+    licenseService:
+      limitRefreshPeriod: 5000
+      limitForPeriod: 5
+      timeoutDuration: 1000ms
+
+resilience4j.retry:
+  instances:
+    retryLicenseService:
+      maxRetryAttempts: 5
+      waitDuration: 10000
+      retry-exceptions:
+        - java.util.concurrent.TimeoutException
+
 resilience4j.bulkhead:
   instances:
     bulkheadLicenseService:
@@ -66,14 +81,6 @@ resilience4j.thread-pool-bulkhead:
       queueCapacity: 1
       keepAliveDuration: 20ms # default
 
-resilience4j.retry:
-  instances:
-    retryLicenseService:
-      maxRetryAttempts: 5
-      waitDuration: 10000
-      retry-exceptions:
-        - java.util.concurrent.TimeoutException
-
 management:
   endpoints:
     enabled-by-default: true
@@ -87,3 +94,7 @@ management:
   health:
       circuitbreakers:
         enabled: true # to show Circuit Breaker status
+
+logging:
+  level:
+    com.optimagrowth: DEBUG
