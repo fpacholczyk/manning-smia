@@ -138,8 +138,8 @@ public class LicenseService {
 
     private void sleep() throws TimeoutException {
         try {
-            logger.info("Sleep 5s");
-            Thread.sleep(5000);
+            logger.info("Sleep 2s");
+            Thread.sleep(2000);
             throw new java.util.concurrent.TimeoutException();
         } catch (InterruptedException e) {
             logger.error(e.getMessage());
