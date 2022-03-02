@@ -7,28 +7,41 @@ import com.optimagrowth.license.repository.LicenseRepository;
 import com.optimagrowth.license.service.client.OrganizationDiscoveryClient;
 import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.TimeoutException;
 
 @Service
 public class LicenseService {
 
     @Autowired
     MessageSource messages;
+
     @Autowired
     ServiceConfig config;
+
     @Autowired
     OrganizationFeignClient organizationFeignClient;
+
     @Autowired
     OrganizationRestTemplateClient organizationRestClient;
+
     @Autowired
     OrganizationDiscoveryClient organizationDiscoveryClient;
+
     @Autowired
     private LicenseRepository licenseRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(LicenseService.class);
 
     public License getLicense(String licenseId, String organizationId, Locale locale) {
         License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
@@ -86,7 +99,7 @@ public class LicenseService {
     }
 
     private Organization retrieveOrganizationInfo(String organizationId, String clientType) {
-        Organization organization = null;
+        Organization organization;
 
         switch (clientType) {
             case "feign":
@@ -109,5 +122,27 @@ public class LicenseService {
         }
 
         return organization;
+    }
+
+    @CircuitBreaker(name = "licenseService")
+    public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
+        randomlyRunLong();
+        return licenseRepository.findByOrganizationId(organizationId);
+    }
+
+    private void randomlyRunLong() throws TimeoutException {
+        Random rand = new Random();
+        int randomNum = rand.nextInt((3 - 1) + 1) + 1;
+        if (randomNum == 3) sleep();
+    }
+
+    private void sleep() throws TimeoutException {
+        try {
+            logger.info("Sleep 5s");
+            Thread.sleep(5000);
+            throw new java.util.concurrent.TimeoutException();
+        } catch (InterruptedException e) {
+            logger.error(e.getMessage());
+        }
     }
 }
