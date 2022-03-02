@@ -9,6 +9,7 @@ import com.optimagrowth.license.service.client.OrganizationFeignClient;
 import com.optimagrowth.license.service.client.OrganizationRestTemplateClient;
 import io.github.resilience4j.bulkhead.annotation.Bulkhead;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import io.github.resilience4j.retry.annotation.Retry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -90,8 +91,9 @@ public class LicenseService {
 
     }
 
-    @CircuitBreaker(name = "licenseService", fallbackMethod = "buildFallbackLicenseList")
-    @Bulkhead(name = "bulkheadLicenseService", fallbackMethod = "buildFallbackLicenseList")
+    @CircuitBreaker(name = "licenseService", fallbackMethod = "circuitBreakerFallback")
+    @Retry(name = "retryLicenseService", fallbackMethod = "retryFallback")
+    @Bulkhead(name = "bulkheadLicenseService", fallbackMethod = "bulkheadFallback")
     public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
         randomlyRunLong();
         return licenseRepository.findByOrganizationId(organizationId);
@@ -139,7 +141,21 @@ public class LicenseService {
         }
     }
 
-    @SuppressWarnings("unused")
+    private List<License> circuitBreakerFallback(String organizationId, Throwable t) {
+        logger.info("circuitBreakerFallback");
+        return buildFallbackLicenseList(organizationId, t);
+    }
+
+    private List<License> retryFallback(String organizationId, Throwable t) {
+        logger.info("retryFallback");
+        return buildFallbackLicenseList(organizationId, t);
+    }
+
+    private List<License> bulkheadFallback(String organizationId, Throwable t) {
+        logger.info("bulkheadFallback");
+        return buildFallbackLicenseList(organizationId, t);
+    }
+
     private List<License> buildFallbackLicenseList(String organizationId, Throwable t) {
         logger.info("returning hard-coded fallback license(s) list");
 

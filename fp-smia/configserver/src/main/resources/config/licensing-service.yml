@@ -66,6 +66,14 @@ resilience4j.thread-pool-bulkhead:
       queueCapacity: 1
       keepAliveDuration: 20ms # default
 
+resilience4j.retry:
+  instances:
+    retryLicenseService:
+      maxRetryAttempts: 5
+      waitDuration: 10000
+      retry-exceptions:
+        - java.util.concurrent.TimeoutException
+
 management:
   endpoints:
     enabled-by-default: true
