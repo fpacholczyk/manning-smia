@@ -14,34 +14,25 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Locale;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.TimeoutException;
 
 @Service
 public class LicenseService {
 
+    private static final Logger logger = LoggerFactory.getLogger(LicenseService.class);
     @Autowired
     MessageSource messages;
-
     @Autowired
     ServiceConfig config;
-
     @Autowired
     OrganizationFeignClient organizationFeignClient;
-
     @Autowired
     OrganizationRestTemplateClient organizationRestClient;
-
     @Autowired
     OrganizationDiscoveryClient organizationDiscoveryClient;
-
     @Autowired
     private LicenseRepository licenseRepository;
-
-    private static final Logger logger = LoggerFactory.getLogger(LicenseService.class);
 
     public License getLicense(String licenseId, String organizationId, Locale locale) {
         License license = licenseRepository.findByOrganizationIdAndLicenseId(organizationId, licenseId);
@@ -98,6 +89,12 @@ public class LicenseService {
 
     }
 
+    @CircuitBreaker(name = "licenseService", fallbackMethod = "buildFallbackLicenseList")
+    public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
+        randomlyRunLong();
+        return licenseRepository.findByOrganizationId(organizationId);
+    }
+
     private Organization retrieveOrganizationInfo(String organizationId, String clientType) {
         Organization organization;
 
@@ -124,12 +121,6 @@ public class LicenseService {
         return organization;
     }
 
-    @CircuitBreaker(name = "licenseService")
-    public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
-        randomlyRunLong();
-        return licenseRepository.findByOrganizationId(organizationId);
-    }
-
     private void randomlyRunLong() throws TimeoutException {
         Random rand = new Random();
         int randomNum = rand.nextInt((3 - 1) + 1) + 1;
@@ -144,5 +135,17 @@ public class LicenseService {
         } catch (InterruptedException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    @SuppressWarnings("unused")
+    private List<License> buildFallbackLicenseList(String organizationId, Throwable t) {
+        logger.info("returning hard-coded fallback license(s) list");
+
+        License license = new License();
+        license.setLicenseId("0000000-00-00000");
+        license.setOrganizationId(organizationId);
+        license.setProductName("Sorry no licensing information currently available");
+
+        return Collections.singletonList(license);
     }
 }

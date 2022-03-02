@@ -2,6 +2,7 @@ package com.optimagrowth.license.service.client;
 
 
 import com.optimagrowth.license.model.Organization;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,5 +14,6 @@ public interface OrganizationFeignClient {
             method = RequestMethod.GET,
             value = "/v1/organization/{organizationId}",
             consumes = "application/json")
+    @CircuitBreaker(name = "organizationService")
     Organization getOrganization(@PathVariable("organizationId") String organizationId);
 }

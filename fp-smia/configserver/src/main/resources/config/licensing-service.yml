@@ -28,11 +28,15 @@ spring:
     show-sql: true
 
 resilience4j.circuitbreaker:
-  instances:
-    licenseService:
+  configs:
+    default:
       registerHealthIndicator: true
       slidingWindowType: COUNT_BASED
-      slidingWindowSize: 5
+      slidingWindowSize: 3
+
+  instances:
+    licenseService:
+      baseConfig: default
       permittedNumberOfCallsInHalfOpenState: 3
       waitDurationInOpenState: 10000
       failureRateThreshold: 50
@@ -41,6 +45,12 @@ resilience4j.circuitbreaker:
         - java.io.IOException
         - java.util.concurrent.TimeoutException
         - org.springframework.web.client.ResourceAccessException
+    organizationService:
+      baseConfig: default
+      slidingWindowSize: 6
+      permittedNumberOfCallsInHalfOpenState: 4
+      waitDurationInOpenState: 20000
+      failureRateThreshold: 60
 
 management:
   endpoints:
