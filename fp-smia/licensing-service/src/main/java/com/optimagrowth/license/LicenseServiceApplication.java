@@ -1,5 +1,6 @@
 package com.optimagrowth.license;
 
+import com.optimagrowth.license.utils.UserContextInterceptor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
@@ -8,7 +9,12 @@ import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 @SpringBootApplication
 @RefreshScope
@@ -41,7 +47,11 @@ public class LicenseServiceApplication {
     @Bean
     public RestTemplate getRestTemplate() {
         // Note: thanks to @EnableDiscoveryClient, every RestTemplate will now have Discovery Client injected.
-        return new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
+        List<ClientHttpRequestInterceptor> interceptors = new ArrayList<>(restTemplate.getInterceptors());
+        interceptors.add(new UserContextInterceptor());
+        restTemplate.setInterceptors(List.copyOf(interceptors));
+        return restTemplate;
     }
 
 }

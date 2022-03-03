@@ -1,4 +1,4 @@
-package com.optimagrowth.license.utils;
+package com.optimagrowth.organization.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

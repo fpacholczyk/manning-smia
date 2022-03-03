@@ -1,4 +1,4 @@
-package com.optimagrowth.license.utils;
+package com.optimagrowth.organization.utils;
 
 import org.springframework.util.Assert;
 

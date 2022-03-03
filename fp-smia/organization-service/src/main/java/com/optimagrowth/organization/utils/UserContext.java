@@ -1,4 +1,4 @@
-package com.optimagrowth.license.utils;
+package com.optimagrowth.organization.utils;
 
 public class UserContext {
     public static final String CORRELATION_ID = "tmx-correlation-id";
