@@ -16,6 +16,13 @@ spring:
       discovery.locator:
         enabled: true
         lowerCaseServiceId: true
+      routes:
+      - id: organization-service
+        uri: lb://organization-service
+        predicates:
+        - Path=/org/**
+        filters:
+        - RewritePath=/org/(?<path>.*), /$\{path}
 
 management:
   endpoints:
