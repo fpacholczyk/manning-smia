@@ -3,7 +3,7 @@
 FROM openjdk:11-slim as build
 
 # Add Maintainer Info
-LABEL maintainer="Illary Huaylupo <illaryhs@gmail.com>"
+# LABEL maintainer="Foo Bar <foobar@example.com>"
 
 # The application's jar file
 ARG JAR_FILE
@@ -18,19 +18,14 @@ RUN mkdir -p target/dependency && (cd target/dependency; jar -xf /app.jar)
 #Same Java runtime
 FROM openjdk:11-slim
 
-# Install curl for running healthcheck
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends curl \
-    && rm -rf /var/lib/apt/lists/*
-
-# Add volume pointing to /tmp
+#Add volume pointing to /tmp
 VOLUME /tmp
 
-# Copy unpackaged application to new container
+#Copy unpackaged application to new container
 ARG DEPENDENCY=/target/dependency
 COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 
-# Execute the application
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.optimagrowth.configserver.ConfigurationServerApplication"]
+#execute the application
+ENTRYPOINT ["java","-cp","app:app/lib/*","com.optimagrowth.gateway.ApiGatewayServerApplication"]

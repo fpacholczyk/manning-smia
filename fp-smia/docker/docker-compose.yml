@@ -1,4 +1,4 @@
-version: '2.1'
+version: '3.8'
 
 services:
   database:
@@ -32,6 +32,12 @@ services:
       backend:
         aliases:
           - "configserver"
+    healthcheck:
+      test: "curl --fail --silent configserver:8071/actuator/health | grep UP || exit 1"
+      interval: 10s
+      retries: 5
+      timeout: 5s
+      start_period: 10s
 
   eurekaserver:
     image: ostock/eureka-server:0.0.1-SNAPSHOT
@@ -46,6 +52,16 @@ services:
       backend:
         aliases:
           - "eurekaserver"
+
+  gatewayserver:
+    image: ostock/gateway-server:0.0.1-SNAPSHOT
+    ports:
+      - "8072:8072"
+    depends_on:
+      configserver:
+        condition: service_healthy
+    networks:
+      - backend
 
   licensingservice:
     image: ostock/licensing-service:0.0.1-SNAPSHOT

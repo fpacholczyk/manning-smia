@@ -1,3 +1,6 @@
+server:
+  port: 8071
+
 spring:
   application:
     name: config-server
@@ -19,13 +22,10 @@ spring:
     ansi:
       enabled: always
 
-server:
-  port: 8071
-
 encrypt:
   key: fje83Ki8403Iod87dne7Yjsl3THueh48jfuO9j4U2hf64Lo
 
-#Enable all Spring Boot Actuator endpoints.
+# Enable all Spring Boot Actuator endpoints.
 management:
   endpoints:
     web:
