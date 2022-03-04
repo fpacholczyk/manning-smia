@@ -38,7 +38,7 @@ services:
       database:
         condition: service_healthy
       configserver:
-        condition: service_started  
+        condition: service_started
     networks:
       backend:
         aliases:
@@ -88,7 +88,7 @@ services:
       - zookeeper
     networks:
       backend:
-        aliases:
+          aliases:
           - "kafka"
   redisserver:
     image: redis:alpine
@@ -136,7 +136,7 @@ services:
       - "8081:8081"
     networks:
       - backend
-    
+
 
 networks:
   backend:

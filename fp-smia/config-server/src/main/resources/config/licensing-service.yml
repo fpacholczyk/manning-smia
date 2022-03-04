@@ -26,6 +26,19 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
+  cloud:
+    stream:
+      bindings:
+        input:
+          destination: orgChangeTopic
+          content-type: application/json
+          group: licensingGroup
+      kafka:
+        binder:
+          zkNodes:
+            - kafka
+          brokers:
+            - kafka
 
 resilience4j.circuitbreaker:
   configs:

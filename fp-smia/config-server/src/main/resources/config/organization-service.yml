@@ -18,6 +18,19 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
 
+  cloud:
+    stream:
+      bindings:
+        output:
+          destination: orgChangeTopic
+          content-type: application/json
+      kafka:
+        binder:
+          zkNodes:
+            - kafka
+          brokers:
+            - kafka
+
 eureka:
   client:
     fetchRegistry: true
