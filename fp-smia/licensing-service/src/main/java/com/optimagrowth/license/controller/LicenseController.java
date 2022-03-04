@@ -17,7 +17,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
-@RequestMapping(value="v1/organization/{organizationId}/license")
+@RequestMapping(value = "v1/organization/{organizationId}/license")
 public class LicenseController {
 
     private static final Logger logger = LoggerFactory.getLogger(LicenseController.class);
@@ -25,7 +25,7 @@ public class LicenseController {
     @Autowired
     private LicenseService licenseService;
 
-    @RequestMapping(value="/{licenseId}", method = RequestMethod.GET)
+    @GetMapping(value = "/{licenseId}")
     public ResponseEntity<License> getLicense(
             @PathVariable("organizationId") String organizationId,
             @PathVariable("licenseId") String licenseId,
@@ -42,7 +42,7 @@ public class LicenseController {
         return ResponseEntity.ok(license);
     }
 
-    @RequestMapping(value="/{licenseId}/{clientType}", method = RequestMethod.GET)
+    @GetMapping(value = "/{licenseId}/{clientType}")
     public License getLicense(
             @PathVariable("organizationId") String organizationId,
             @PathVariable("licenseId") String licenseId,
@@ -61,14 +61,14 @@ public class LicenseController {
         return ResponseEntity.ok(licenseService.createLicense(request));
     }
 
-    @DeleteMapping(value="/{licenseId}")
+    @DeleteMapping(value = "/{licenseId}")
     public ResponseEntity<String> deleteLicense(
             @PathVariable("licenseId") String licenseId,
             @RequestHeader(value = "Accept-Language", required = false) Locale locale) {
         return ResponseEntity.ok(licenseService.deleteLicense(licenseId, locale));
     }
 
-    @RequestMapping(value="/",method = RequestMethod.GET)
+    @GetMapping(value = "/")
     public List<License> getLicenses(@PathVariable("organizationId") String organizationId) throws TimeoutException {
         logger.debug("LicenseServiceController Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
         return licenseService.getLicensesByOrganization(organizationId);

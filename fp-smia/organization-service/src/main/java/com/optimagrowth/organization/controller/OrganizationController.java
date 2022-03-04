@@ -19,13 +19,14 @@ public class OrganizationController {
     @Autowired
     private OrganizationService service;
 
-    @RequestMapping(value = "/{organizationId}", method = RequestMethod.GET)
+    @GetMapping(value = "/{organizationId}")
     public ResponseEntity<Organization> getOrganization(@PathVariable("organizationId") String organizationId) {
-        logger.debug("OrganizationController#getOrganization Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
-        return ResponseEntity.ok(service.findById(organizationId));
+        logger.debug("OrganizationController#getOrganization Correlation id: {}",
+                UserContextHolder.getContext().getCorrelationId());
+        return ResponseEntity.of(service.findById(organizationId));
     }
 
-    @RequestMapping(value = "/{organizationId}", method = RequestMethod.PUT)
+    @PutMapping(value = "/{organizationId}")
     public void updateOrganization(@PathVariable("organizationId") String id, @RequestBody Organization organization) {
         service.update(organization);
     }
@@ -35,10 +36,10 @@ public class OrganizationController {
         return ResponseEntity.ok(service.create(organization));
     }
 
-    @RequestMapping(value = "/{organizationId}", method = RequestMethod.DELETE)
+    @DeleteMapping(value = "/{organizationId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void deleteOrganization(@PathVariable("id") String id, @RequestBody Organization organization) {
-        service.delete(organization);
+    public void deleteOrganization(@PathVariable("organizationId") String organizationId) {
+        service.delete(organizationId);
     }
 
 }

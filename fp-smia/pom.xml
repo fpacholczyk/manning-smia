@@ -22,8 +22,8 @@
     </properties>
 
   <modules>
-    <module>configserver</module>
-    <module>eurekaserver</module>
+    <module>config-server</module>
+    <module>eureka-server</module>
     <module>gateway-server</module>
     <module>licensing-service</module>
     <module>organization-service</module>

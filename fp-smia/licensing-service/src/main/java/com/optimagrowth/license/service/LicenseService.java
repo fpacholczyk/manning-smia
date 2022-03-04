@@ -52,6 +52,15 @@ public class LicenseService {
                             messages.getMessage("license.search.error.message", null, locale),
                             licenseId, organizationId));
         }
+
+        Organization organization = retrieveOrganizationInfo(organizationId, "rest");
+        if (organization != null) {
+            license.setOrganizationName(organization.getName());
+            license.setContactName(organization.getContactName());
+            license.setContactEmail(organization.getContactEmail());
+            license.setContactPhone(organization.getContactPhone());
+        }
+
         return license.withComment(config.getProperty());
     }
 
@@ -106,7 +115,8 @@ public class LicenseService {
     @Retry(name = "retryLicenseService", fallbackMethod = "retryFallback")
     @Bulkhead(name = "bulkheadLicenseService", fallbackMethod = "bulkheadFallback")
     public List<License> getLicensesByOrganization(String organizationId) throws TimeoutException {
-        logger.debug("LicenseService#getLicensesByOrganization Correlation id: {}", UserContextHolder.getContext().getCorrelationId());
+        logger.debug("LicenseService#getLicensesByOrganization Correlation id: {}",
+                UserContextHolder.getContext().getCorrelationId());
         randomlyRunLong();
         return licenseRepository.findByOrganizationId(organizationId);
     }
