@@ -20,8 +20,9 @@ spring:
 
   cloud:
     stream:
+      source: simpleSourceBean
       bindings:
-        output:
+        simpleSourceBean-out-0:
           destination: orgChangeTopic
           content-type: application/json
       kafka:

@@ -27,9 +27,11 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
   cloud:
+    function:
+      definition: loggerSink
     stream:
       bindings:
-        input:
+        loggerSink-in-0:
           destination: orgChangeTopic
           content-type: application/json
           group: licensingGroup

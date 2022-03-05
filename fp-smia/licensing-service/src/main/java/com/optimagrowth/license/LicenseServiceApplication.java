@@ -10,9 +10,6 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.cloud.stream.annotation.EnableBinding;
-import org.springframework.cloud.stream.annotation.StreamListener;
-import org.springframework.cloud.stream.messaging.Sink;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
@@ -20,12 +17,12 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 @SpringBootApplication
 @RefreshScope
 @EnableDiscoveryClient
 @EnableFeignClients
-@EnableBinding(Sink.class)
 public class LicenseServiceApplication {
 
     private static final Logger logger = LoggerFactory.getLogger(LicenseServiceApplication.class);
@@ -62,9 +59,9 @@ public class LicenseServiceApplication {
         return restTemplate;
     }
 
-    @StreamListener(Sink.INPUT)
-    public void loggerSink(OrganizationChangeModel change) {
-        logger.debug("Received an {} event for organization id: {}. Correlation ID: {}",
+    @Bean
+    public Consumer<OrganizationChangeModel> loggerSink() {
+        return change -> logger.debug("Received an {} event for organization id: {}. Correlation ID: {}",
                 change.getAction(), change.getOrganizationId(), change.getCorrelationId());
     }
 }
